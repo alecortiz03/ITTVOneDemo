@@ -34,8 +34,9 @@
 
 // ====== IMPORTS ======
 import React from 'react'; // Import React for component creation
-import { View, Text, StyleSheet } from 'react-native'; // Import necessary components from React Native
+import { View, Text, StyleSheet, Image } from 'react-native'; // Import necessary components from React Native
 import { useWindowDimensions } from 'react-native'; // Import hook to get window dimensions
+import { Icons } from '@/AppData/Icons'; // Import icons from the AppData
 
 // ---------------------- HoursCard Component ------------------
 export default function HoursCard({
@@ -52,7 +53,7 @@ export default function HoursCard({
 	const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 	const componentWidth = Math.max(screenWidth * 0.45, 250); // Ensure a minimum card width for readability
 	const componentHeight = Math.max(screenHeight * 0.3, 80); // Ensure a minimum card height for readability
-	const titleFontSize = Math.max(componentWidth * 0.1, 16); // Font size for the title, scaled based on the card size
+	const titleFontSize = Math.max(componentWidth * 0.07, 16); // Font size for the title, scaled based on the card size
 	const rowOneFontSize = Math.max(componentWidth * 0.05, 12); // Font size for the first row of text, scaled based on the card size
 	const rowTwoFontSize = Math.max(componentWidth * 0.05, 12); // Font size for the second row of text, scaled based on the card size
 	const rowThreeFontSize = Math.max(componentWidth * 0.05, 12); // Font size for the third row of text, scaled based on the card size
@@ -77,42 +78,22 @@ export default function HoursCard({
 				},
 				style,
 			]}>
-			<Text
-				adjustsFontSizeToFit
-				minimumFontScale={0.5}
-				numberOfLines={1}
-				flexShrink={1}
-				style={[
-					styles.hoursTitle, // Style for the title text
-					{
-						position: 'absolute',
-						top: titleFontSize * -0.0, // Position the title near the top of the card
-						fontSize: titleFontSize, // Set the font size for the title
-						color: textColor, // Set the color for the title text
-						width: '90%', // Set the width of the title text to 90% of the card width
-						textShadowColor: 'rgba(0, 0, 0, 0.75)', // Add a shadow to the title text for better visibility
-						textShadowOffset: { width: 2, height: 2 }, // Set the offset for the text shadow
-						textShadowRadius: 4, // Set the radius for the text shadow
-						includeFontPadding: false, // Remove extra padding around text for better vertical centering}
-						paddingTop: titleFontSize * 0.06, // Add padding to the top of the title text for better spacing
-					},
-				]}>
-				Hours
-			</Text>
-			<View
-				style={[
-					styles.Line, // Style for the line separating the title and hours
-					{
-						position: 'absolute',
-						top: componentHeight * 0.3, // Position the line below the title
-						height: lineHeight, // Set the height of the line based on the scale factor
-						backgroundColor: lineColor, // Set the color of the line
-						shadowColor: 'rgba(0, 0, 0, 0.75)', // Add a shadow to the line for better visibility
-						shadowOffset: { width: 2, height: 2 }, // Set the offset for the line shadow
-						shadowOpacity: 0.8, // Set the opacity for the line shadow
-						width: lineWidth, // Set the width of the line based on the scale factor
-					},
-				]}></View>
+			<Image
+				source={Icons.Hours}
+				style={{
+					position: 'absolute',
+					width: componentWidth * 0.45,
+					height: componentWidth * 0.7,
+					resizeMode: 'contain',
+					top: -componentWidth * 0.27,
+					shadowColor: '#000',
+					shadowOffset: { width: 0, height: 2 },
+					shadowOpacity: 0.8,
+					shadowRadius: 4,
+					elevation: 5,
+				}}
+			/>
+
 			<Text
 				adjustsFontSizeToFit
 				minimumFontScale={0.5}

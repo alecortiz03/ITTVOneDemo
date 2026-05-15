@@ -48,7 +48,7 @@ export default function DateTimeCard({
 	// Font Size
 	const componentWidth = Math.max(screenWidth * 0.67, 250); // Card width is 67% of screen width or minimum 300
 	const componentHeight = Math.max(screenHeight * 0.2, 80);
-	const fontSize = Math.max(componentWidth * 0.05, 16); // Font size is 5.5% of card width
+	const fontSize = Math.max(componentWidth * 0.06, 16); // Font size is 5.5% of card width
 	const textPadding = componentWidth * 0.05; // Text padding is 5% of card width
 	useEffect(() => {
 		// ------------ updateTime function ------------
@@ -73,7 +73,7 @@ export default function DateTimeCard({
 			});
 			// Format the time string as "Day, Time - Date"
 			// Example: "Monday, 3:45 PM - September 15, 2024"
-			const formattedTime = `${day}, ${time} - ${date}`;
+			const formattedTime = `${day}   ${time}    ${date}`;
 			// Update the currentTime state with the formatted time string
 			setCurrentTime(formattedTime);
 		};
@@ -117,7 +117,6 @@ export default function DateTimeCard({
 					styles.text,
 					{
 						fontSize: fontSize /* Font size relative to card width */,
-						padding: textPadding /* Padding relative to card width */,
 						backgroundColor:
 							textBackgroundColor /* Background color for the text area */,
 						color: textColor /* Color of the text */,

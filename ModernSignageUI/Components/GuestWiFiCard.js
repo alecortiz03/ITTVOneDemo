@@ -20,8 +20,8 @@ export default function GuestWiFiCard({
 
 	const scale = Math.min(componentWidth, componentHeight);
 
-	const titleFontSize = Math.max(scale * 0.15, 18);
-	const infoFontSize = Math.max(scale * 0.08, 12);
+	const titleFontSize = Math.max(scale * 0.17, 18);
+	const infoFontSize = Math.max(scale * 0.135, 12);
 
 	const iconWidth = Math.max(componentWidth * 0.08, 24);
 	const iconHeight = Math.max(componentHeight * 0.08, 24);
@@ -141,17 +141,14 @@ export default function GuestWiFiCard({
 					adjustsFontSizeToFit
 					minimumFontScale={0.6}
 					style={[
-						styles.title,
-						{ fontSize: titleFontSize, marginBottom: componentHeight * 0.03 },
+						styles.info,
+						{
+							fontSize: infoFontSize,
+							textShadowColor: 'rgba(0, 0, 0, 0.75)',
+							textShadowOffset: { width: 1, height: 1 },
+							textShadowRadius: 2,
+						},
 					]}>
-					Guest Wi-Fi
-				</Text>
-
-				<Text
-					numberOfLines={1}
-					adjustsFontSizeToFit
-					minimumFontScale={0.6}
-					style={[styles.info, { fontSize: infoFontSize }]}>
 					Need Guest Wi-Fi?
 				</Text>
 
@@ -159,7 +156,15 @@ export default function GuestWiFiCard({
 					numberOfLines={2}
 					adjustsFontSizeToFit
 					minimumFontScale={0.6}
-					style={[styles.info, { fontSize: infoFontSize }]}>
+					style={[
+						styles.info,
+						{
+							fontSize: infoFontSize,
+							textShadowColor: 'rgba(0, 0, 0, 0.75)',
+							textShadowOffset: { width: 1, height: 1 },
+							textShadowRadius: 2,
+						},
+					]}>
 					Text <Text style={styles.highlight}>{data?.dailyKey}</Text> to{' '}
 					<Text style={styles.highlight}>
 						{formatPhoneNumber(data?.locales?.en?.phoneNumber)}
@@ -170,7 +175,15 @@ export default function GuestWiFiCard({
 					numberOfLines={2}
 					adjustsFontSizeToFit
 					minimumFontScale={0.6}
-					style={[styles.info, { fontSize: infoFontSize }]}>
+					style={[
+						styles.info,
+						{
+							fontSize: infoFontSize,
+							textShadowColor: 'rgba(0, 0, 0, 0.75)',
+							textShadowOffset: { width: 1, height: 1 },
+							textShadowRadius: 2,
+						},
+					]}>
 					to get access to <Text style={styles.highlight}>Eduroam</Text> today!
 				</Text>
 			</View>

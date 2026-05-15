@@ -18,7 +18,7 @@ export default function NewsCard({
 	const componentHeight = Math.max(height * 0.65, 80); // Ensure a minimum card height for readability
 	const imageWidth = Math.max(componentWidth * 0.9, 200); // Ensure a minimum image width for readability
 	const imageHeight = Math.max(componentHeight * 0.53, 80); // Ensure a minimum image height for readability
-	const fontSize = Math.max(componentWidth * 0.05, 12); // Font size for the article title, scaled based on the card size
+	const fontSize = Math.max(componentWidth * 0.045, 12); // Font size for the article title, scaled based on the card size
 
 	const getYouTubeVideoId = (url) => {
 		if (!url) return null;
