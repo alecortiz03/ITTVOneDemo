@@ -7,6 +7,10 @@ jobs:
   build-windows:
     runs-on: windows-latest
 
+    defaults:
+      run:
+        working-directory: ./ModernSignageUI
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -15,6 +19,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: ModernSignageUI/package-lock.json
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -36,5 +42,5 @@ jobs:
         with:
           name: windows-build
           path: |
-            src-tauri/target/release/bundle/msi/*.msi
-            src-tauri/target/release/bundle/nsis/*.exe
+            ModernSignageUI/src-tauri/target/release/bundle/msi/*.msi
+            ModernSignageUI/src-tauri/target/release/bundle/nsis/*.exe
