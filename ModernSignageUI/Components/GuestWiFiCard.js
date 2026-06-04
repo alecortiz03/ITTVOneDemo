@@ -145,7 +145,7 @@ export default function GuestWiFiCard({
 								: screenWidth < 500 ? 8.5
 								: screenWidth < 550 ? 12
 								: screenWidth < 900 ? 20
-								: screenWidth > 1000 ? 30
+								: screenWidth > 1000 ? 26
 								: 22, // Set the font size based on screen width
 							textShadowColor: 'rgba(0, 0, 0, 0.75)',
 							textShadowOffset: { width: 1, height: 1 },
@@ -167,7 +167,7 @@ export default function GuestWiFiCard({
 								: screenWidth < 500 ? 8.5
 								: screenWidth < 550 ? 12
 								: screenWidth < 900 ? 20
-								: screenWidth > 1000 ? 30
+								: screenWidth > 1000 ? 26
 								: 22, // Set the font size based on screen width
 							textShadowColor: 'rgba(0, 0, 0, 0.75)',
 							textShadowOffset: { width: 1, height: 1 },
@@ -192,7 +192,7 @@ export default function GuestWiFiCard({
 								: screenWidth < 500 ? 8.5
 								: screenWidth < 550 ? 12
 								: screenWidth < 900 ? 20
-								: screenWidth > 1000 ? 30
+								: screenWidth > 1000 ? 26
 								: 22, // Set the font size based on screen width
 							textShadowColor: 'rgba(0, 0, 0, 0.75)',
 							textShadowOffset: { width: 1, height: 1 },

@@ -150,7 +150,13 @@ export default function WeatherCard({
 							style={[
 								styles.temperature,
 								{
-									fontSize: fontScale * 0.9,
+									fontSize:
+										width < 400 ? 2
+										: width < 500 ? 2
+										: width < 550 ? 3
+										: width < 900 ? 7
+										: width > 1000 ? 10
+										: 22,
 									color: textColor,
 								},
 							]}>
@@ -207,11 +213,14 @@ const styles = StyleSheet.create({
 		shadowRadius: 4,
 		elevation: 5,
 		flexDirection: 'row',
+		overflow: 'hidden',
 	},
 	weatherRow: {
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
+		overflow: 'hidden',
+		marginBottom: 10,
 	},
 	detailsRow: {
 		flex: 1,
@@ -238,8 +247,6 @@ const styles = StyleSheet.create({
 	},
 
 	temperature: {
-		fontWeight: 'bold',
-		textAlign: 'center',
 		fontWeight: 'bold',
 		textAlign: 'center',
 
