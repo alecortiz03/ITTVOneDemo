@@ -1,9 +1,15 @@
-import React from 'react';
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import {
+	View,
+	Text,
+	StyleSheet,
+	ImageBackground,
+	Animated,
+} from 'react-native';
+import { invoke } from '@tauri-apps/api/core';
 import { Images } from '@/AppData/Images';
 
 import DateTimeCard from '@/Components/DateTimeCard';
-
 import { BlurView } from 'expo-blur';
 import HoursCard from '@/Components/HoursCard';
 import WeatherCard from '@/Components/WeatherCard';
@@ -11,6 +17,82 @@ import NewsCard from '@/Components/NewsCard';
 import GuestWiFiCard from '@/Components/GuestWiFiCard';
 
 export default function MainHoursDisplay() {
+	const [hundTitle, setHundTitle] = useState('Loading...');
+	const [hundServices, setHundServices] = useState([]);
+	const [hundResult, setHundResult] = useState('Loading...');
+
+	const [containerWidth, setContainerWidth] = useState(0);
+	const [textWidth, setTextWidth] = useState(0);
+	const [tickerReady, setTickerReady] = useState(false);
+
+	const translateX = useRef(new Animated.Value(9999)).current;
+
+	useEffect(() => {
+		async function testHund() {
+			try {
+				const result = await invoke('fetch_hund_status');
+
+				const lines = result
+					.split('\n')
+					.map((line) => line.trim())
+					.filter((line) => line.length > 0);
+
+				const title = lines[0];
+				const services = lines.slice(1);
+
+				setHundTitle(title);
+				setHundServices(services);
+
+				setHundResult(
+					`🚨${title}🚨 • Affected Services: ${services.join(' | ')}`,
+				);
+			} catch (error) {
+				setHundTitle('Hund Error');
+				setHundServices([]);
+				setHundResult(`Hund Error: ${error}`);
+			}
+		}
+
+		// Run immediately
+		testHund();
+
+		// Then every minute
+		const interval = setInterval(testHund, 60000);
+
+		return () => clearInterval(interval);
+	}, []);
+
+	useEffect(() => {
+		if (containerWidth === 0 || textWidth === 0) return;
+
+		const startPosition = containerWidth + 50;
+		const endPosition = -textWidth - containerWidth;
+
+		translateX.setValue(startPosition);
+		setTickerReady(true);
+
+		const animation = Animated.loop(
+			Animated.sequence([
+				Animated.delay(100),
+				Animated.timing(translateX, {
+					toValue: endPosition,
+					duration: 30000,
+					useNativeDriver: true,
+				}),
+				Animated.delay(1500),
+				Animated.timing(translateX, {
+					toValue: startPosition,
+					duration: 0,
+					useNativeDriver: true,
+				}),
+			]),
+		);
+
+		animation.start();
+
+		return () => animation.stop();
+	}, [containerWidth, textWidth, hundResult]);
+
 	return (
 		<ImageBackground
 			style={styles.container}
@@ -18,45 +100,58 @@ export default function MainHoursDisplay() {
 			<BlurView
 				intensity={100}
 				style={styles.blurView}>
-				<DateTimeCard
-					textColor={'white'}
-					componentWidth={'70%'}
-					componentHeight={'20%'}
-					backgroundColor={'rgba(0, 0, 0, 0.46)'}
-					borderRadius={60}
-					borderWidth={6}
-					positionVertical={'5%'}
-					positionHorizontal={'2%'}
-					borderColor={'#00000065'}
-				/>
-				<WeatherCard
-					textColor={'white'}
-					positionVertical={'5.25%'}
-					positionHorizontal={'72%'}
-					borderRadius={60}
-					borderWidth={6}
-					backgroundColor={'rgba(0, 0, 0, 0.46)'}
-					borderColor={'#00000083'}
-				/>
-				<HoursCard
-					componentWidth={'50%'}
-					borderRadius={60}
-					borderWidth={6}
-					borderColor={'#0000007a'}
-					positionHorizontal={'2.5%'}
-					positionVertical={'38%'}
-					backgroundColor={'rgba(0, 0, 0, 0.46)'}
-					textColor={'white'}
-					lineColor={'white'}
-				/>
-				<NewsCard
-					positionHorizontal={'50%'}
-					positionVertical={'31%'}
-				/>
-				<GuestWiFiCard
-					positionHorizontal={'3.4%'}
-					positionVertical={'4.7%'}
-				/>
+				<View style={styles.header}>
+					<DateTimeCard
+						borderRadius={60}
+						borderWidth={6}
+						borderColor='#212324bd'
+						textColor='#f8f6f6'
+						backgroundColor='rgba(2, 2, 2, 0.61)'
+					/>
+					<WeatherCard
+						borderRadius={60}
+						borderWidth={6}
+						borderColor='#212324bd'
+						textColor='#f8f6f6'
+						backgroundColor='rgba(2, 2, 2, 0.61)'
+					/>
+				</View>
+				{hundTitle != 'No Active Alerts' && (
+					<View
+						style={styles.hundContainer}
+						onLayout={(e) =>
+							setContainerWidth(e.nativeEvent.layout.width - 20)
+						}>
+						<Animated.Text
+							onLayout={(e) => setTextWidth(e.nativeEvent.layout.width)}
+							style={[
+								styles.hundText,
+								{
+									opacity: tickerReady ? 1 : 0,
+									transform: [{ translateX }],
+								},
+								{ fontSize: containerWidth > 800 ? 24 : 16 },
+							]}>
+							{hundResult}
+						</Animated.Text>
+					</View>
+				)}
+				<View style={styles.body}>
+					<View style={styles.leftColumn}>
+						<HoursCard
+							borderRadius={60}
+							borderWidth={6}
+							borderColor='#212324bd'
+							textColor='#f8f6f6'
+							backgroundColor='rgba(2, 2, 2, 0.61)'
+						/>
+						<GuestWiFiCard />
+					</View>
+
+					<View style={styles.rightColumn}>
+						<NewsCard />
+					</View>
+				</View>
 			</BlurView>
 		</ImageBackground>
 	);
@@ -71,13 +166,67 @@ const styles = StyleSheet.create({
 		height: '100%',
 		resizeMode: 'cover',
 	},
-	text: {
-		fontSize: 24,
-		fontWeight: 'bold',
-	},
 	blurView: {
 		...StyleSheet.absoluteFillObject,
+		justifyContent: 'space-evenly',
+		width: '100%',
+		height: '100%',
+	},
+	header: {
+		flexDirection: 'row',
+		justifyContent: 'space-evenly',
+	},
+	hundContainer: {
+		backgroundColor: 'rgba(0, 0, 0, 0.59)',
+		borderBottomWidth: 6,
+		borderTopWidth: 6,
+		borderColor: '#0c0b0b9a',
+		padding: 10,
+		height: 40,
+		overflow: 'hidden',
 		justifyContent: 'center',
+		height: '10%',
+		width: '100%',
+	},
+	hundText: {
+		color: '#ffffff',
+		whiteSpace: 'nowrap',
+		textShadowColor: 'rgba(0, 0, 0, 0.75)',
+		textShadowOffset: { width: 1, height: 1 },
+		textShadowRadius: 2,
+	},
+	hundDetails: {
+		backgroundColor: 'rgba(255,255,255,0.9)',
+		marginHorizontal: 10,
+		padding: 10,
+		borderRadius: 8,
+	},
+	hundTitle: {
+		fontSize: 18,
+		fontWeight: 'bold',
+		color: '#000',
+	},
+	hundLabel: {
+		marginTop: 6,
+		fontSize: 14,
+		fontWeight: 'bold',
+		color: '#000',
+	},
+	hundService: {
+		fontSize: 14,
+		color: '#000',
+	},
+	body: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+	},
+	leftColumn: {
+		flex: 1,
+		alignItems: 'center',
+		gap: 60,
+	},
+	rightColumn: {
+		flex: 1,
 		alignItems: 'center',
 	},
 });

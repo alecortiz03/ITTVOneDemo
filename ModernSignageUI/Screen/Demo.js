@@ -11,11 +11,7 @@ import WeatherCard from '@/Components/WeatherCard';
 export default function Demo() {
 	return (
 		<View style={styles.container}>
-			<HoursCard
-				componentWidth='90%'
-				componentHeight='70%'
-				lineColor={'black'}
-			/>
+			<HoursCard />
 		</View>
 	);
 }

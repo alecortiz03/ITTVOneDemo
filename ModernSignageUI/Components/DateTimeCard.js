@@ -43,12 +43,14 @@ export default function DateTimeCard({
 	borderWidth /* Width of the border */,
 }) {
 	// State to hold the current time string
+
 	const [currentTime, setCurrentTime] = useState('');
 	const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 	// Font Size
-	const componentWidth = Math.max(screenWidth * 0.67, 250); // Card width is 67% of screen width or minimum 300
-	const componentHeight = Math.max(screenHeight * 0.2, 80);
-	const fontSize = Math.max(componentWidth * 0.06, 16); // Font size is 5.5% of card width
+	const componentWidth = Math.max(screenWidth * 0.6, 250); // Card width is 70% of screen width or minimum 250
+	const componentHeight = Math.max(screenHeight * 0.1, 80);
+	const fontScaleFactor = Math.min(componentWidth, componentHeight); // Scale factor based on screen size (using iPhone 8 as reference)
+	const fontSize = Math.max(fontScaleFactor * 0.27, 16); // Font size is 10% of card width
 	const textPadding = componentWidth * 0.05; // Text padding is 5% of card width
 	useEffect(() => {
 		// ------------ updateTime function ------------
@@ -73,7 +75,7 @@ export default function DateTimeCard({
 			});
 			// Format the time string as "Day, Time - Date"
 			// Example: "Monday, 3:45 PM - September 15, 2024"
-			const formattedTime = `${day}   ${time}    ${date}`;
+			const formattedTime = `${day}, ${time}  -  ${date}`;
 			// Update the currentTime state with the formatted time string
 			setCurrentTime(formattedTime);
 		};
@@ -102,21 +104,23 @@ export default function DateTimeCard({
 					borderColor: borderColor /* Border color of the card */,
 					borderRadius: borderRadius /* Border radius for rounded corners */,
 					borderWidth: borderWidth /* Width of the border */,
-					top: positionVertical /* Vertical position of the card */,
-					left: positionHorizontal /* Horizontal position of the card */,
 				},
 				style,
 			]}>
 			{/* ====== Card Text Component ====== */}
 			<Text
-				numberOfLines={1}
-				adjustsFontSizeToFit
 				minimumFontScale={0.5}
 				maxFontSizeMultiplier={1}
 				style={[
 					styles.text,
 					{
-						fontSize: fontSize /* Font size relative to card width */,
+						fontSize:
+							screenWidth < 400 ? 7.5
+							: screenWidth < 500 ? 8.5
+							: screenWidth < 550 ? 12
+							: screenWidth < 900 ? 20
+							: screenWidth > 1000 ? 36
+							: 22 /* Font size relative to card width */,
 						backgroundColor:
 							textBackgroundColor /* Background color for the text area */,
 						color: textColor /* Color of the text */,
@@ -135,9 +139,12 @@ export default function DateTimeCard({
 const styles = StyleSheet.create({
 	// Card container styles
 	card: {
-		position: 'absolute', // Position the card absolutely for custom placement
-		alignItems: 'center', // Center content horizontally
-		justifyContent: 'center', // Center content vertically
+		flexWrap: 'wrap', // Allow content to wrap within the card
+		flexDirection: 'row', // Arrange content in a row
+		justifyContent: 'center', // Center content horizontally
+		alignItems: 'baseline', // Align items along the baseline
+		alignContent: 'center', // Center content vertically
+
 		shadowColor: '#000', // Shadow color
 		shadowOffset: { width: 0, height: 2 }, // Shadow offset
 		shadowOpacity: 0.8, // Shadow opacity
@@ -147,7 +154,6 @@ const styles = StyleSheet.create({
 	// Time text styles
 	text: {
 		fontWeight: 'bold', // Bold font for better visibility
-		width: '100%',
 		flexShrink: 1,
 		textAlign: 'center', // Center the text horizontally
 		includeFontPadding: false, // Remove extra padding around text for better vertical centering

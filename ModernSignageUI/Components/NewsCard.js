@@ -18,7 +18,13 @@ export default function NewsCard({
 	const componentHeight = Math.max(height * 0.65, 80); // Ensure a minimum card height for readability
 	const imageWidth = Math.max(componentWidth * 0.9, 200); // Ensure a minimum image width for readability
 	const imageHeight = Math.max(componentHeight * 0.53, 80); // Ensure a minimum image height for readability
-	const fontSize = Math.max(componentWidth * 0.045, 12); // Font size for the article title, scaled based on the card size
+	const fontSize =
+		width < 400 ? 12
+		: width < 500 ? 8.5
+		: width < 550 ? 12
+		: width < 900 ? 20
+		: width > 1000 ? 30
+		: 22; // Set the font size based on screen width
 
 	const getYouTubeVideoId = (url) => {
 		if (!url) return null;
@@ -76,9 +82,6 @@ export default function NewsCard({
 				{
 					width: componentWidth,
 					height: componentHeight,
-					position: 'absolute',
-					top: positionVertical,
-					left: positionHorizontal,
 				},
 			]}>
 			{currentArticle ?
@@ -87,10 +90,8 @@ export default function NewsCard({
 						<iframe
 							src={embedUrl}
 							style={{
-								position: 'absolute',
 								width: imageWidth,
 								height: imageHeight,
-								bottom: height * 0.23,
 								borderRadius: 30,
 								borderWidth: 6,
 								borderColor: '#0c0b0b9a',
@@ -106,11 +107,11 @@ export default function NewsCard({
 							style={[
 								styles.placeholderImage,
 								{
-									position: 'absolute',
 									width: imageWidth,
 									height: imageHeight,
-									bottom: height * 0.23,
 									borderRadius: 30,
+									borderWidth: 6,
+									borderColor: '#0c0b0b9a',
 								},
 							]}
 							resizeMode='cover'
@@ -123,9 +124,6 @@ export default function NewsCard({
 							justifyContent: 'center',
 							width: '80%',
 							height: componentHeight * 0.2,
-							padding: 10,
-							top: componentHeight * 0.23,
-							paddingTop: componentHeight * 0.15,
 						}}>
 						<Text style={[styles.firstTitle, { fontSize: fontSize }]}>
 							{currentArticle.title}
@@ -157,7 +155,8 @@ const styles = StyleSheet.create({
 		elevation: 5,
 	},
 	firstTitle: {
-		position: 'absolute',
+		marginTop: 10,
+		flexShrink: 1,
 		color: 'white',
 		fontWeight: 'bold',
 		textAlign: 'center',

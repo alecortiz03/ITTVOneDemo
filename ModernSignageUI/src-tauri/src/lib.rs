@@ -1,3 +1,5 @@
+use scraper::{Html, Selector};
+
 #[tauri::command]
 async fn fetch_rss_feed() -> Result<String, String> {
     let url = "https://www.youtube.com/feeds/videos.xml?user=CNETTV";
@@ -30,6 +32,49 @@ async fn fetch_guest_wifi_info() -> Result<String, String> {
     Ok(json)
 }
 
+#[tauri::command]
+async fn fetch_hund_status() -> Result<String, String> {
+    let url = "https://macewan.hund.io/";
+
+    let response = reqwest::get(url)
+        .await
+        .map_err(|error| error.to_string())?;
+
+    let html = response
+        .text()
+        .await
+        .map_err(|error| error.to_string())?;
+
+    let document = Html::parse_document(&html);
+
+    let title_selector =
+        Selector::parse(".issue-notice--header__title").unwrap();
+
+    let service_selector =
+        Selector::parse(".issue-notice--footer__context li a").unwrap();
+
+    let title = document
+        .select(&title_selector)
+        .next()
+        .map(|e| e.text().collect::<String>())
+        .unwrap_or_else(|| "No Active Alerts".to_string());
+
+    let services: Vec<String> = document
+        .select(&service_selector)
+        .map(|e| e.text().collect::<String>().trim().to_string())
+        .collect();
+
+    if services.is_empty() {
+        return Ok(title.trim().to_string());
+    }
+
+    Ok(format!(
+        "{}\n{}",
+        title.trim(),
+        services.join("\n")
+    ))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -45,7 +90,8 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             fetch_rss_feed,
-            fetch_guest_wifi_info
+            fetch_guest_wifi_info,
+            fetch_hund_status
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

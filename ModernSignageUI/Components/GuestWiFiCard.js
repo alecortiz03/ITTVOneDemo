@@ -15,13 +15,12 @@ export default function GuestWiFiCard({
 	const [wifiSync, setWifiSync] = useState(false);
 	const [data, setData] = useState(null);
 
-	const componentWidth = Math.max(screenWidth * 0.43, 250);
-	const componentHeight = Math.max(screenHeight * 0.25, 180);
+	const componentWidth = Math.max(screenWidth * 0.9, 250);
+	const componentHeight = Math.max(screenHeight * 0.23, 180);
 
 	const scale = Math.min(componentWidth, componentHeight);
 
-	const titleFontSize = Math.max(scale * 0.17, 18);
-	const infoFontSize = Math.max(scale * 0.135, 12);
+	const infoFontSize = Math.max(scale * 0.12, 12);
 
 	const iconWidth = Math.max(componentWidth * 0.08, 24);
 	const iconHeight = Math.max(componentHeight * 0.08, 24);
@@ -117,10 +116,8 @@ export default function GuestWiFiCard({
 			style={[
 				styles.container,
 				{
-					width: componentWidth,
+					width: '90%',
 					height: componentHeight,
-					bottom: positionVertical,
-					left: positionHorizontal,
 				},
 				style,
 			]}>
@@ -143,7 +140,13 @@ export default function GuestWiFiCard({
 					style={[
 						styles.info,
 						{
-							fontSize: infoFontSize,
+							fontSize:
+								screenWidth < 400 ? 12
+								: screenWidth < 500 ? 8.5
+								: screenWidth < 550 ? 12
+								: screenWidth < 900 ? 20
+								: screenWidth > 1000 ? 30
+								: 22, // Set the font size based on screen width
 							textShadowColor: 'rgba(0, 0, 0, 0.75)',
 							textShadowOffset: { width: 1, height: 1 },
 							textShadowRadius: 2,
@@ -159,7 +162,13 @@ export default function GuestWiFiCard({
 					style={[
 						styles.info,
 						{
-							fontSize: infoFontSize,
+							fontSize:
+								screenWidth < 400 ? 12
+								: screenWidth < 500 ? 8.5
+								: screenWidth < 550 ? 12
+								: screenWidth < 900 ? 20
+								: screenWidth > 1000 ? 30
+								: 22, // Set the font size based on screen width
 							textShadowColor: 'rgba(0, 0, 0, 0.75)',
 							textShadowOffset: { width: 1, height: 1 },
 							textShadowRadius: 2,
@@ -178,7 +187,13 @@ export default function GuestWiFiCard({
 					style={[
 						styles.info,
 						{
-							fontSize: infoFontSize,
+							fontSize:
+								screenWidth < 400 ? 12
+								: screenWidth < 500 ? 8.5
+								: screenWidth < 550 ? 12
+								: screenWidth < 900 ? 20
+								: screenWidth > 1000 ? 30
+								: 22, // Set the font size based on screen width
 							textShadowColor: 'rgba(0, 0, 0, 0.75)',
 							textShadowOffset: { width: 1, height: 1 },
 							textShadowRadius: 2,
@@ -193,7 +208,6 @@ export default function GuestWiFiCard({
 
 const styles = StyleSheet.create({
 	container: {
-		position: 'absolute',
 		padding: 20,
 		borderRadius: 60,
 		borderWidth: 6,
@@ -212,19 +226,13 @@ const styles = StyleSheet.create({
 		minHeight: 0,
 	},
 
-	title: {
-		fontWeight: 'bold',
-		textAlign: 'center',
-		color: 'white',
-		width: '100%',
-	},
-
 	info: {
 		textAlign: 'center',
 		color: 'white',
 		width: '100%',
 		flexShrink: 1,
 		marginBottom: 4,
+		fontWeight: 'bold',
 	},
 
 	highlight: {

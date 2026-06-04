@@ -51,14 +51,15 @@ export default function HoursCard({
 	positionHorizontal, // Horizontal position of the card (e.g., distance from left)
 }) {
 	const { width: screenWidth, height: screenHeight } = useWindowDimensions();
-	const componentWidth = Math.max(screenWidth * 0.45, 250); // Ensure a minimum card width for readability
-	const componentHeight = Math.max(screenHeight * 0.3, 80); // Ensure a minimum card height for readability
-	const titleFontSize = Math.max(componentWidth * 0.07, 16); // Font size for the title, scaled based on the card size
-	const rowOneFontSize = Math.max(componentWidth * 0.05, 12); // Font size for the first row of text, scaled based on the card size
-	const rowTwoFontSize = Math.max(componentWidth * 0.05, 12); // Font size for the second row of text, scaled based on the card size
-	const rowThreeFontSize = Math.max(componentWidth * 0.05, 12); // Font size for the third row of text, scaled based on the card size
+	const componentWidth = Math.max(screenWidth * 0.9, 250); // Ensure a minimum card width for readability
+	const componentHeight = Math.max(screenHeight * 0.29, 80); // Ensure a minimum card height for readability
+	const fontScaleFactor = Math.min(componentWidth, componentHeight); // Scale factor based on screen size (using iPhone 8 as reference)
+	const rowOneFontSize = Math.max(fontScaleFactor * 0.09, 12); // Font size for the first row of text, scaled based on the card size
+	const rowTwoFontSize = Math.max(fontScaleFactor * 0.09, 12); // Font size for the second row of text, scaled based on the card size
+	const rowThreeFontSize = Math.max(fontScaleFactor * 0.09, 12); // Font size for the third row of text, scaled based on the card size
 	const lineHeight = Math.max(componentHeight * 0.009, 4); // Height of the line, scaled based on the card size
 	const lineWidth = Math.max(componentWidth * 0.6, 100); // Width of the line, scaled based on the card size
+	console.log('HoursCard - screenWidth:', screenWidth);
 
 	// State to hold the calculated font size
 	return (
@@ -66,90 +67,93 @@ export default function HoursCard({
 			style={[
 				styles.card,
 				{
-					position: 'absolute', // Position the card absolutely within its parent container
-					width: componentWidth, // Set the card width
-					height: componentHeight, // Set the card height
+					width: '90%', // Set the card width
 					borderRadius: borderRadius, // Set the border radius
 					borderWidth: borderWidth, // Set the border width
 					borderColor: borderColor, // Set the border color
 					backgroundColor: backgroundColor, // Set the background color
-					bottom: positionVertical, // Set the vertical position
-					left: positionHorizontal, // Set the horizontal position
 				},
 				style,
 			]}>
-			<Image
-				source={Icons.Hours}
-				style={{
-					position: 'absolute',
-					width: componentWidth * 0.45,
-					height: componentWidth * 0.7,
-					resizeMode: 'contain',
-					top: -componentWidth * 0.27,
-					shadowColor: '#000',
-					shadowOffset: { width: 0, height: 2 },
-					shadowOpacity: 0.8,
-					shadowRadius: 4,
-					elevation: 5,
-				}}
-			/>
-
-			<Text
-				adjustsFontSizeToFit
-				minimumFontScale={0.5}
-				style={[
-					styles.hoursRowOne, // Style for the first row of hours text
-					{
-						position: 'absolute',
-						top: componentHeight * 0.35, // Position the first row of text below the line
-						fontSize: rowOneFontSize, // Set the font size for the first row of text
-						marginHorizontal: componentWidth * 0.01, // Set horizontal margin based on the card width
-						color: textColor, // Set the color for the first row of text
-						textShadowColor: 'rgba(0, 0, 0, 0.75)', // Add a shadow to the first row of text for better visibility
-						textShadowOffset: { width: 1, height: 1 }, // Set the offset for the text shadow
-						textShadowRadius: 2, // Set the radius for the text shadow
-						paddingTop: rowOneFontSize * 0.1, // Add padding to the top of the first row of text for better spacing
-					},
-				]}
-				numberOfLines={1}>
-				Monday - Friday: 8:00 AM - 7:00 PM
-			</Text>
-			<Text
-				adjustsFontSizeToFit
-				minimumFontScale={0.5}
-				style={[
-					styles.hoursRowTwo,
-					{
-						top: componentHeight * 0.555, // Position the second row of text in the middle of the card
-						position: 'absolute',
-						fontSize: rowTwoFontSize, // Set the font size for the second row of text
-						color: textColor, // Set the color for the second row of text
-						textShadowColor: 'rgba(0, 0, 0, 0.75)', // Add a shadow to the second row of text for better visibility
-						textShadowOffset: { width: 1, height: 1 }, // Set the offset for the text shadow
-						textShadowRadius: 2, // Set the radius for the text shadow
-					},
-				]}
-				numberOfLines={1}>
-				Saturday: 9:00 AM - 5:00 PM
-			</Text>
-			<Text
-				adjustsFontSizeToFit
-				minimumFontScale={0.5}
-				numberOfLines={1}
-				style={[
-					styles.hoursRowThree, // Style for the third row of hours text
-					{
-						position: 'absolute',
-						top: componentHeight * 0.75, // Position the third row of text below the second row
-						fontSize: rowThreeFontSize, // Set the font size for the third row of text
-						color: textColor, // Set the color for the third row of text
-						textShadowColor: 'rgba(0, 0, 0, 0.75)', // Add a shadow to the third row of text for better visibility
-						textShadowOffset: { width: 1, height: 1 }, // Set the offset for the text shadow
-						textShadowRadius: 2, // Set the radius for the text shadow
-					},
-				]}>
-				Sunday: Closed
-			</Text>
+			<View style={styles.header}>
+				<Text
+					adjustsFontSizeToFit
+					minimumFontScale={0.5}
+					style={[
+						styles.titleText,
+						{ fontSize: screenWidth > 400 ? 32 : 16, color: textColor },
+					]}>
+					IT Support Hours
+				</Text>
+			</View>
+			<View style={styles.textContainer}>
+				<Text
+					adjustsFontSizeToFit
+					minimumFontScale={0.5}
+					style={[
+						styles.hoursRowOne, // Style for the first row of hours text
+						{
+							fontSize:
+								screenWidth < 400 ? 7.5
+								: screenWidth < 500 ? 8.5
+								: screenWidth < 550 ? 12
+								: screenWidth < 900 ? 20
+								: screenWidth > 1000 ? 30
+								: 22, // Set the font size based on screen width
+							color: textColor, // Set the color for the first row of text
+							textShadowColor: 'rgba(0, 0, 0, 0.75)', // Add a shadow to the first row of text for better visibility
+							textShadowOffset: { width: 1, height: 1 }, // Set the offset for the text shadow
+							textShadowRadius: 2, // Set the radius for the text shadow
+						},
+					]}
+					numberOfLines={1}>
+					Monday - Friday: 8:00 AM - 7:00 PM
+				</Text>
+				<Text
+					adjustsFontSizeToFit
+					minimumFontScale={0.5}
+					style={[
+						styles.hoursRowTwo,
+						{
+							fontSize:
+								screenWidth < 400 ? 7.5
+								: screenWidth < 500 ? 8.5
+								: screenWidth < 550 ? 12
+								: screenWidth < 900 ? 20
+								: screenWidth > 1000 ? 30
+								: 22, // Set the font size based on screen width
+							color: textColor, // Set the color for the first row of text
+							textShadowColor: 'rgba(0, 0, 0, 0.75)', // Add a shadow to the first row of text for better visibility
+							textShadowOffset: { width: 1, height: 1 }, // Set the offset for the text shadow
+							textShadowRadius: 2, // Set the radius for the text shadow
+						},
+					]}
+					numberOfLines={1}>
+					Saturday: 9:00 AM - 5:00 PM
+				</Text>
+				<Text
+					adjustsFontSizeToFit
+					minimumFontScale={0.5}
+					numberOfLines={1}
+					style={[
+						styles.hoursRowThree, // Style for the third row of hours text
+						{
+							fontSize:
+								screenWidth < 400 ? 7.5
+								: screenWidth < 500 ? 8.5
+								: screenWidth < 550 ? 12
+								: screenWidth < 900 ? 20
+								: screenWidth > 1000 ? 30
+								: 22, // Set the font size based on screen width
+							color: textColor, // Set the color for the third row of text
+							textShadowColor: 'rgba(0, 0, 0, 0.75)', // Add a shadow to the third row of text for better visibility
+							textShadowOffset: { width: 1, height: 1 }, // Set the offset for the text shadow
+							textShadowRadius: 2, // Set the radius for the text shadow
+						},
+					]}>
+					Sunday: Closed
+				</Text>
+			</View>
 		</View>
 	);
 }
@@ -157,13 +161,11 @@ export default function HoursCard({
 const styles = StyleSheet.create({
 	card: {
 		alignItems: 'center', // Center content horizontally
-		justifyContent: 'space-evenly', // Distribute space evenly between content
 		shadowColor: '#000', // Shadow color
 		shadowOffset: { width: 0, height: 2 }, // Shadow offset
 		shadowOpacity: 0.8, // Shadow opacity
 		shadowRadius: 4, // Shadow radius
 		elevation: 5, // Elevation for Android shadow
-		overflow: 'hidden', // Hide overflow content
 	},
 	hoursTitle: {
 		fontWeight: 'bold', // Bold font for the title
@@ -173,26 +175,43 @@ const styles = StyleSheet.create({
 	},
 	hoursRowOne: {
 		fontWeight: 'bold', // Bold font for the first row of hours text
-
-		width: '90%', // Set width to 90% of the card width
 		textAlign: 'center', // Center text horizontally
 		flexShrink: 1, // Allow text to shrink to fit within the card
+		paddingBottom: 30, // Add padding below the first row for better spacing
 	},
 	hoursRowTwo: {
 		fontWeight: 'bold', // Bold font for the second row of hours text
-
-		width: '90%', // Set width to 90% of the card width
 		textAlign: 'center', // Center text horizontally
 		flexShrink: 1, // Allow text to shrink to fit within the card
+		paddingBottom: 30, // Add padding below the second row for better spacing
 	},
 	Line: {
 		borderRadius: 100, // Set border radius to create a rounded line
 	},
 	hoursRowThree: {
 		fontWeight: 'bold', // Bold font for the third row of hours text
-
-		width: '90%', // Set width to 90% of the card width
 		textAlign: 'center', // Center text horizontally
 		flexShrink: 1, // Allow text to shrink to fit within the card
+		paddingBottom: 30, // Add padding below the third row for better spacing
+	},
+	textContainer: {
+		flex: 2,
+		width: '100%',
+		justifyContent: 'space-evenly', // Evenly space the rows of text
+	},
+	header: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	titleText: {
+		fontWeight: 'bold',
+		flexShrink: 1,
+		textAlign: 'center',
+		width: '100%',
+		textShadowColor: 'rgba(0, 0, 0, 0.75)',
+		textShadowOffset: { width: 1, height: 1 },
+		textShadowRadius: 2,
+		textDecorationLine: 'underline',
 	},
 });
