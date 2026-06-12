@@ -1,7 +1,7 @@
 {
 	"$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
 	"productName": "ITTVOne",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"identifier": "com.alecortiz.ittvone",
 
 	"build": {
@@ -16,8 +16,9 @@
 			{
 				"title": "ITTVOne",
 				"resizable": false,
-				"fullscreen": true,
-				"decorations": false
+				"decorations": false,
+				"width": 3840,
+				"height": 2160
 			}
 		],
 		"security": {
