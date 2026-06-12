@@ -47,8 +47,8 @@ export default function DateTimeCard({
 	const [currentTime, setCurrentTime] = useState('');
 	const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 	// Font Size
-	const componentWidth = Math.max(screenWidth * 0.6, 250); // Card width is 70% of screen width or minimum 250
-	const componentHeight = Math.max(screenHeight * 0.1, 80);
+	const componentWidth = Math.max(screenWidth * 0.5, 250); // Card width is 70% of screen width or minimum 250
+	const componentHeight = Math.max(screenHeight * 0.2, 80);
 	const fontScaleFactor = Math.min(componentWidth, componentHeight); // Scale factor based on screen size (using iPhone 8 as reference)
 	const fontSize = Math.max(fontScaleFactor * 0.27, 16); // Font size is 10% of card width
 	const textPadding = componentWidth * 0.05; // Text padding is 5% of card width
@@ -119,7 +119,7 @@ export default function DateTimeCard({
 							: screenWidth < 500 ? 8.5
 							: screenWidth < 550 ? 12
 							: screenWidth < 900 ? 20
-							: screenWidth > 1000 ? 36
+							: screenWidth > 1000 ? 53
 							: 22 /* Font size relative to card width */,
 						backgroundColor:
 							textBackgroundColor /* Background color for the text area */,

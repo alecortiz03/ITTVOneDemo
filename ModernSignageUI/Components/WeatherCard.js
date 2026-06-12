@@ -17,14 +17,14 @@ export default function WeatherCard({
 	const longitude = -113.50601718049307;
 
 	const { width, height } = useWindowDimensions();
-	const componentWidth = Math.max(width * 0.3, 250); // Ensure a minimum card width for readability
-	const componentHeight = Math.max(height * 0.1, 80); // Ensure a minimum card height for readability
+	const componentWidth = Math.max(width * 0.25, 250); // Ensure a minimum card width for readability
+	const componentHeight = Math.max(height * 0.2, 80); // Ensure a minimum card height for readability
 
 	const scale = Math.min(componentWidth, componentHeight); // Scale factor based on screen size (using iPhone 8 as reference)
 
 	const fontScale = Math.max(scale * 0.1, 12); // Base font size scaled based on the card width
-	const imageWidth = Math.max(scale * 0.5, 50); // Image width scaled based on the card width
-	const imageHeight = Math.max(scale * 0.5, 50); // Image height scaled based on the card height
+	const imageWidth = Math.max(scale * 0.4, 50); // Image width scaled based on the card width
+	const imageHeight = Math.max(scale * 0.4, 50); // Image height scaled based on the card height
 	const weatherUrl =
 		`https://api.open-meteo.com/v1/forecast` +
 		`?latitude=${latitude}` +
@@ -125,43 +125,53 @@ export default function WeatherCard({
 				<>
 					<View style={styles.weatherRow}>
 						{weatherInfo?.image && (
-							<Image
-								source={{ uri: weatherInfo.image }}
-								style={[
-									styles.image,
-									{
-										width: imageWidth,
-										height: imageHeight,
-									},
-								]}
-								resizeMode='contain'
-							/>
+							<View
+								style={{
+									alignItems: 'center',
+									padding: 4,
+									width: imageWidth,
+									height: imageHeight,
+								}}>
+								<Image
+									source={{ uri: weatherInfo.image }}
+									style={[
+										styles.image,
+										{
+											width: imageWidth,
+											height: imageHeight,
+										},
+									]}
+									resizeMode='contain'
+								/>
+							</View>
 						)}
-						<Text
-							style={[
-								styles.weatherType,
-								{ fontSize: fontScale * 0.9, color: textColor },
-							]}>
-							{weatherInfo.title}
-						</Text>
-						<Text
-							numberOfLines={1}
-							adjustsFontSizeToFit
-							style={[
-								styles.temperature,
-								{
-									fontSize:
-										width < 400 ? 2
-										: width < 500 ? 2
-										: width < 550 ? 3
-										: width < 900 ? 7
-										: width > 1000 ? 10
-										: 22,
-									color: textColor,
-								},
-							]}>
-							{Math.round(weather.temperature_2m)}°C
-						</Text>
+						<View style={{ paddingBottom: 6, alignItems: 'center' }}>
+							<Text
+								style={[
+									styles.weatherType,
+									{ fontSize: fontScale * 0.9, color: textColor },
+								]}>
+								{weatherInfo.title}
+							</Text>
+							<Text
+								numberOfLines={1}
+								adjustsFontSizeToFit
+								style={[
+									styles.temperature,
+									{
+										fontSize:
+											width < 400 ? 2
+											: width < 500 ? 2
+											: width < 550 ? 3
+											: width < 900 ? 7
+											: width > 1000 ? 20
+											: 22,
+										color: textColor,
+									},
+								]}>
+								{Math.round(weather.temperature_2m)}°C
+							</Text>
+						</View>
 					</View>
 					<View style={styles.lineRow}>
 						<View
@@ -268,7 +278,9 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 	},
 
-	image: {},
+	image: {
+		marginTop: 6,
+	},
 
 	loadingText: {
 		color: 'white',

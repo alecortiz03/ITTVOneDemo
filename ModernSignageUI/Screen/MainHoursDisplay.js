@@ -15,8 +15,52 @@ import HoursCard from '@/Components/HoursCard';
 import WeatherCard from '@/Components/WeatherCard';
 import NewsCard from '@/Components/NewsCard';
 import GuestWiFiCard from '@/Components/GuestWiFiCard';
+import SpotifyPlayerCard from '@/Components/SpotifyPlayerCard';
 
 export default function MainHoursDisplay() {
+	useEffect(() => {
+		console.log('Spotify useEffect started');
+
+		async function checkSpotifyToken() {
+			try {
+				console.log('Checking Spotify token...');
+
+				const res = await fetch(
+					'https://spotifyserver-kzcx.onrender.com/spotify/token',
+				);
+
+				console.log('Response status:', res.status);
+
+				const data = await res.json();
+
+				console.log('Spotify token response:', data);
+
+				if (data.access_token) {
+					console.log('Token found!');
+					setSpotifyAccessToken(data.access_token);
+				} else {
+					console.log('No token found');
+					setSpotifyAccessToken(null);
+				}
+			} catch (error) {
+				console.log('Spotify token check failed:', error);
+			}
+		}
+
+		checkSpotifyToken();
+
+		const interval = setInterval(checkSpotifyToken, 2000);
+
+		return () => clearInterval(interval);
+	}, []);
+	const [spotifyAccessToken, setSpotifyAccessToken] = useState(null);
+	useEffect(() => {
+		console.log(
+			'spotifyAccessToken changed:',
+			spotifyAccessToken ? 'HAS TOKEN' : 'NULL',
+		);
+	}, [spotifyAccessToken]);
+
 	const [hundTitle, setHundTitle] = useState('Loading...');
 	const [hundServices, setHundServices] = useState([]);
 	const [hundResult, setHundResult] = useState('Loading...');
@@ -24,7 +68,10 @@ export default function MainHoursDisplay() {
 	const [containerWidth, setContainerWidth] = useState(0);
 	const [textWidth, setTextWidth] = useState(0);
 	const [tickerReady, setTickerReady] = useState(false);
-
+	//const [spotifyAccessToken, setSpotifyAccessToken] = useState(null);
+	//useEffect(() => {
+	//setSpotifyAccessToken('PASTE_YOUR_ACCESS_TOKEN_HERE');
+	//}, []);
 	const translateX = useRef(new Animated.Value(9999)).current;
 
 	useEffect(() => {
@@ -100,7 +147,7 @@ export default function MainHoursDisplay() {
 			<BlurView
 				intensity={100}
 				style={styles.blurView}>
-				<View style={styles.header}>
+				<View style={[styles.header, {}]}>
 					<DateTimeCard
 						borderRadius={60}
 						borderWidth={6}
@@ -109,6 +156,14 @@ export default function MainHoursDisplay() {
 						backgroundColor='rgba(2, 2, 2, 0.61)'
 					/>
 					<WeatherCard
+						borderRadius={60}
+						borderWidth={6}
+						borderColor='#212324bd'
+						textColor='#f8f6f6'
+						backgroundColor='rgba(2, 2, 2, 0.61)'
+					/>
+					<SpotifyPlayerCard
+						accessToken={spotifyAccessToken}
 						borderRadius={60}
 						borderWidth={6}
 						borderColor='#212324bd'
@@ -175,6 +230,8 @@ const styles = StyleSheet.create({
 	header: {
 		flexDirection: 'row',
 		justifyContent: 'space-evenly',
+		alignItems: 'center',
+		width: '100%',
 	},
 	hundContainer: {
 		backgroundColor: 'rgba(0, 0, 0, 0.59)',

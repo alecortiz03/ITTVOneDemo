@@ -1,16 +1,34 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import DateTimeCard from '@/Components/DateTimeCard';
-import HoursCard from '@/Components/HoursCard';
-import WeatherCard from '@/Components/WeatherCard';
+import { useEffect } from 'react';
+import { check } from '@tauri-apps/plugin-updater';
+import { relaunch } from '@tauri-apps/plugin-process';
+
+import { StyleSheet } from 'react-native';
 import MainHoursDisplay from '@/Screen/MainHoursDisplay';
 import Demo from '@/Screen/Demo';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 const Stack = createNativeStackNavigator();
 
+async function checkForUpdates() {
+	try {
+		const update = await check();
+
+		if (update) {
+			await update.downloadAndInstall();
+			await relaunch();
+		}
+	} catch (error) {
+		console.log('Update check failed:', error);
+	}
+}
+
 export default function App() {
+	useEffect(() => {
+		checkForUpdates();
+	}, []);
+
 	return (
 		<NavigationContainer>
 			<Stack.Navigator
@@ -28,12 +46,3 @@ export default function App() {
 		</NavigationContainer>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#fff',
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-});
