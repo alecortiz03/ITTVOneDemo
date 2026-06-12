@@ -119,7 +119,7 @@ export default function DateTimeCard({
 							: screenWidth < 500 ? 8.5
 							: screenWidth < 550 ? 12
 							: screenWidth < 900 ? 20
-							: screenWidth > 1000 ? 53
+							: screenWidth > 1000 ? 45
 							: 22 /* Font size relative to card width */,
 						backgroundColor:
 							textBackgroundColor /* Background color for the text area */,

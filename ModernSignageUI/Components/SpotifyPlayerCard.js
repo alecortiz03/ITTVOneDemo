@@ -11,45 +11,25 @@ import { QRCode } from 'react-qrcode-logo';
 import { Icons } from '@/AppData/Icons';
 
 // ---------------------- SpotifyPlayerCard Component ------------------
-// Function: Displays Spotify connection QR code, creates Spotify Web Playback device,
-// plays Spotify audio through the app, and displays current track details.
-// Props:
-// - accessToken: Spotify user access token from your backend.
-// - style: Custom styles for the card container.
-// - backgroundColor: Background color of the card.
-// - borderColor: Border color of the card.
-// - textColor: Main text color.
-// - subTextColor: Secondary text color.
-// - borderRadius: Border radius for rounded corners.
-// - borderWidth: Width of the border.
-// Example usage:
-// <SpotifyPlayerCard
-//   accessToken={spotifyAccessToken}
-//   backgroundColor="rgba(2, 2, 2, 0.61)"
-//   borderColor="#212324bd"
-//   textColor="#f8f6f6"
-//   subTextColor="#cccccc"
-//   borderRadius={60}
-//   borderWidth={6}
-// />
-
 export default function SpotifyPlayerCard({
-	accessToken /* Spotify access token */,
-	style /* Custom styles for the card container */,
-	backgroundColor = 'rgba(2, 2, 2, 0.61)' /* Background color of the card */,
-	borderColor = '#212324bd' /* Border color of the card */,
-	textColor = '#f8f6f6' /* Main text color */,
-	subTextColor = '#cccccc' /* Secondary text color */,
-	borderRadius = 60 /* Border radius */,
-	borderWidth = 6 /* Border width */,
+	accessToken,
+	style,
+	backgroundColor = 'rgba(2, 2, 2, 0.61)',
+	borderColor = '#212324bd',
+	textColor = '#f8f6f6',
+	subTextColor = '#cccccc',
+	borderRadius = 60,
+	borderWidth = 6,
 }) {
 	console.log('HIT:     ', Icons.Spotify.uri);
+
 	// ------------ State ------------
 	const [status, setStatus] = useState('Loading Spotify QR...');
 	const [deviceId, setDeviceId] = useState(null);
 	const [connectUrl, setConnectUrl] = useState('');
 	const [track, setTrack] = useState(null);
 	const [isPlaying, setIsPlaying] = useState(false);
+	const [currentPosition, setCurrentPosition] = useState(0);
 
 	// ------------ Refs ------------
 	const playerRef = useRef(null);
@@ -69,25 +49,25 @@ export default function SpotifyPlayerCard({
 		: screenWidth < 900 ? 150
 		: 100;
 
-	const titleFontSize =
-		screenWidth < 500 ? 20
-		: screenWidth < 900 ? 24
-		: 24;
-
 	const songFontSize =
 		screenWidth < 500 ? 16
 		: screenWidth < 900 ? 20
-		: 12;
+		: 6;
 
 	const artistFontSize =
 		screenWidth < 500 ? 13
 		: screenWidth < 900 ? 16
-		: 9;
+		: 6;
 
 	const statusFontSize =
 		screenWidth < 500 ? 12
 		: screenWidth < 900 ? 15
-		: 10;
+		: 8;
+
+	const progressPercent =
+		track?.duration && track.duration > 0 ?
+			(currentPosition / track.duration) * 100
+		:	0;
 
 	// ------------ Load QR connect URL ------------
 	useEffect(() => {
@@ -103,6 +83,17 @@ export default function SpotifyPlayerCard({
 
 		loadConnectUrl();
 	}, []);
+
+	// ------------ Smooth progress bar timer ------------
+	useEffect(() => {
+		if (!track || !isPlaying) return;
+
+		const interval = setInterval(() => {
+			setCurrentPosition((prev) => Math.min(prev + 1000, track.duration));
+		}, 1000);
+
+		return () => clearInterval(interval);
+	}, [track, isPlaying]);
 
 	// ------------ Spotify Web Playback SDK setup ------------
 	useEffect(() => {
@@ -127,20 +118,17 @@ export default function SpotifyPlayerCard({
 
 			playerRef.current = player;
 
-			// ------------ Spotify device is ready ------------
 			player.addListener('ready', ({ device_id }) => {
 				console.log('Spotify device ready:', device_id);
 				setDeviceId(device_id);
 				setStatus('Ready. Open Spotify on your phone and select ITTVOne.');
 			});
 
-			// ------------ Spotify device went offline ------------
 			player.addListener('not_ready', ({ device_id }) => {
 				console.log('Spotify device offline:', device_id);
 				setStatus('Spotify device went offline');
 			});
 
-			// ------------ Track state changed ------------
 			player.addListener('player_state_changed', (state) => {
 				console.log('Spotify state changed:', state);
 
@@ -154,6 +142,7 @@ export default function SpotifyPlayerCard({
 				if (!currentTrack) return;
 
 				setIsPlaying(!state.paused);
+				setCurrentPosition(state.position);
 
 				setTrack({
 					title: currentTrack.name,
@@ -165,7 +154,6 @@ export default function SpotifyPlayerCard({
 				});
 			});
 
-			// ------------ Spotify errors ------------
 			player.addListener('initialization_error', ({ message }) => {
 				console.error('Spotify init error:', message);
 				setStatus(`Init error: ${message}`);
@@ -186,7 +174,6 @@ export default function SpotifyPlayerCard({
 				setStatus(`Playback error: ${message}`);
 			});
 
-			// ------------ Connect Spotify player ------------
 			player.connect().then((success) => {
 				console.log('Spotify player connected:', success);
 
@@ -198,7 +185,6 @@ export default function SpotifyPlayerCard({
 			});
 		}
 
-		// ------------ Load Spotify SDK script ------------
 		if (document.getElementById('spotify-player-script')) {
 			setupPlayer();
 		} else {
@@ -211,7 +197,6 @@ export default function SpotifyPlayerCard({
 			window.onSpotifyWebPlaybackSDKReady = setupPlayer;
 		}
 
-		// ------------ Cleanup player on unmount ------------
 		return () => {
 			if (playerRef.current) {
 				playerRef.current.disconnect();
@@ -220,7 +205,6 @@ export default function SpotifyPlayerCard({
 		};
 	}, [accessToken]);
 
-	// -------------- Render SpotifyPlayerCard component ------------
 	return (
 		<View
 			style={[
@@ -228,14 +212,13 @@ export default function SpotifyPlayerCard({
 				{
 					width: componentWidth,
 					height: componentHeight,
-					backgroundColor: backgroundColor,
-					borderColor: borderColor,
-					borderRadius: borderRadius,
-					borderWidth: borderWidth,
+					backgroundColor,
+					borderColor,
+					borderRadius,
+					borderWidth,
 				},
 				style,
 			]}>
-			{/* ====== Loading State ====== */}
 			{!accessToken && !connectUrl && (
 				<Text
 					style={[
@@ -249,13 +232,12 @@ export default function SpotifyPlayerCard({
 				</Text>
 			)}
 
-			{/* ====== QR Code State ====== */}
 			{!accessToken && connectUrl && (
 				<>
 					<View style={styles.qrBox}>
 						<QRCode
 							value={connectUrl}
-							size={100}
+							size={componentWidth * 0.5}
 							logoImage={Icons.Spotify.uri}
 							logoWidth={30}
 							logoHeight={30}
@@ -278,20 +260,9 @@ export default function SpotifyPlayerCard({
 						]}>
 						Scan to connect Spotify
 					</Text>
-
-					{/*<Text
-						style={[
-							styles.url,
-							{
-								color: subTextColor,
-							},
-						]}>
-						{connectUrl}
-					</Text>*/}
 				</>
 			)}
 
-			{/* ====== Connected but no song selected yet ====== */}
 			{accessToken && !track && (
 				<>
 					<Text
@@ -319,7 +290,6 @@ export default function SpotifyPlayerCard({
 				</>
 			)}
 
-			{/* ====== Current Track Display ====== */}
 			{accessToken && track && (
 				<>
 					{track.image && (
@@ -366,43 +336,61 @@ export default function SpotifyPlayerCard({
 							styles.album,
 							{
 								color: subTextColor,
-								fontSize: artistFontSize,
+								fontSize: artistFontSize * 0.7,
 							},
 						]}>
 						{track.album}
 					</Text>
+
+					<Text
+						style={[
+							styles.playStatus,
+							{
+								color: isPlaying ? '#65ac5a' : subTextColor,
+								fontSize: artistFontSize,
+								marginBottom: 3,
+							},
+						]}>
+						{isPlaying ? '▶ Playing' : '⏸ Paused'}
+					</Text>
+
+					<View style={styles.progressBar}>
+						<View
+							style={[
+								styles.progressFill,
+								{
+									width: `${progressPercent}%`,
+								},
+							]}
+						/>
+					</View>
 				</>
 			)}
 		</View>
 	);
-	// -------------- End of SpotifyPlayerCard component ------------
 }
 
-// ---------------------- Styles for SpotifyPlayerCard ------------------
 const styles = StyleSheet.create({
-	// Card container styles
 	card: {
 		justifyContent: 'center',
 		alignItems: 'center',
-
 		shadowColor: '#000',
 		shadowOffset: { width: 0, height: 2 },
 		shadowOpacity: 0.8,
 		shadowRadius: 4,
 		elevation: 5,
 	},
-	// Card title styles
+
 	title: {
 		fontWeight: 'bold',
 		marginBottom: 12,
 		textAlign: 'center',
 		includeFontPadding: false,
-
 		textShadowColor: 'rgba(0, 0, 0, 0.75)',
 		textShadowOffset: { width: 2, height: 2 },
 		textShadowRadius: 4,
 	},
-	// QR code wrapper styles
+
 	qrBox: {
 		backgroundColor: '#65ac5aaa',
 		borderRadius: 20,
@@ -415,36 +403,56 @@ const styles = StyleSheet.create({
 		shadowRadius: 4,
 		elevation: 5,
 	},
-	// Album art styles
+
 	albumArt: {
 		borderRadius: 24,
 		marginTop: 10,
 	},
-	// Song title text styles
+
 	songTitle: {
 		fontWeight: 'bold',
 		textAlign: 'center',
 		includeFontPadding: false,
-
 		textShadowColor: 'rgba(0, 0, 0, 0.75)',
 		textShadowOffset: { width: 2, height: 2 },
 		textShadowRadius: 4,
-		marginTop: 10,
+		marginTop: 3,
 	},
-	// Artist text styles
+
 	artist: {
-		marginTop: 6,
+		marginTop: 3,
 		textAlign: 'center',
 		includeFontPadding: false,
 	},
-	// Album text styles
+
 	album: {
 		fontSize: 14,
-		marginTop: 4,
 		textAlign: 'center',
 		includeFontPadding: false,
 	},
-	// Status text styles
+
+	playStatus: {
+		marginTop: 4,
+		fontWeight: 'bold',
+		textAlign: 'center',
+		includeFontPadding: false,
+	},
+
+	progressBar: {
+		width: '60%',
+		height: 8,
+		backgroundColor: 'rgba(255,255,255,0.15)',
+		borderRadius: 999,
+		overflow: 'hidden',
+		marginBottom: 12,
+	},
+
+	progressFill: {
+		height: '100%',
+		backgroundColor: '#65ac5a',
+		borderRadius: 999,
+	},
+
 	status: {
 		fontWeight: 'bold',
 		textAlign: 'center',
@@ -454,13 +462,13 @@ const styles = StyleSheet.create({
 		textShadowOffset: { width: 2, height: 2 },
 		textShadowRadius: 4,
 	},
-	// URL text styles
+
 	url: {
 		fontSize: 10,
 		marginTop: 10,
 		textAlign: 'center',
 	},
-	// Device text styles
+
 	device: {
 		fontSize: 12,
 		textAlign: 'center',
