@@ -43,6 +43,31 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
 
+      - name: Generate updater latest.json
+        shell: pwsh
+        run: |
+          $version = "0.1.1"
+          $exeName = "ITTVOne_${version}_x64-setup.exe"
+          $sigPath = "src-tauri/target/release/bundle/nsis/$exeName.sig"
+          $jsonPath = "src-tauri/target/release/bundle/latest.json"
+
+          $signature = (Get-Content $sigPath -Raw).Trim()
+
+          $manifest = @{
+            version = $version
+            notes = "ITTVOne update $version"
+            pub_date = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+            platforms = @{
+              "windows-x86_64" = @{
+                signature = $signature
+                url = "https://github.com/alecortiz03/ITTVOneDemo/releases/latest/download/$exeName"
+              }
+            }
+          } | ConvertTo-Json -Depth 5
+
+          $manifest | Out-File $jsonPath -Encoding utf8
+          Get-Content $jsonPath
+
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
