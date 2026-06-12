@@ -27,6 +27,10 @@ async function checkForUpdates() {
 export default function App() {
 	useEffect(() => {
 		checkForUpdates();
+
+		const interval = setInterval(checkForUpdates, 60000);
+
+		return () => clearInterval(interval);
 	}, []);
 
 	return (
